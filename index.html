@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Green Generator</title>
+<style>
+  
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;background:radial-gradient(circle at 15% 10%,rgba(0,255,120,.13),transparent 28%),radial-gradient(circle at 90% 85%,rgba(0,255,100,.1),transparent 30%),linear-gradient(145deg,#020806,#061810,#031009);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(66,255,140,.15) 1px,transparent 1px);background-size:35px 35px;opacity:.25}
+.container{width:min(92%,520px);margin:auto;padding:30px 0 60px}
+.header{text-align:center;margin-bottom:25px;animation:fadeDown .8s ease both}
+.header h1{font-size:30px;letter-spacing:1px;background:linear-gradient(90deg,#fff,#50ff99,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.header p{margin-top:7px;color:#789789;font-size:13px}
+
+/* KARTU DENGAN ANIMASI SUPER SMOOTH FLOATING / BERGOYANG SEPERTI GELOMBANG VIDEO */
+.card{position:relative;margin-bottom:20px;padding:18px;border-radius:24px;background:rgba(7,25,17,.72);border:1px solid rgba(72,255,140,.18);box-shadow:0 20px 55px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:floatCard 6s ease-in-out infinite, fadeUp .8s ease both;transition:transform .35s,border-color .35s,box-shadow .35s;will-change:transform}
+.card:nth-child(3){animation-delay: -3s, 0.2s} /* Delay berbeda agar gerakan kartu berikutnya terasa organik */
+.card:hover{transform:translateY(-6px) scale(1.01) !important;border-color:rgba(72,255,140,.45);box-shadow:0 25px 65px rgba(0,0,0,.42),0 0 30px rgba(30,255,120,.12)}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+.card-title{margin-bottom:13px;color:#b6cdbf;font-size:14px;font-weight:bold}
+.media-box{position:relative;width:100%;height:245px;overflow:hidden;border-radius:19px;background:linear-gradient(145deg,#10291c,#020906);border:1px solid rgba(65,255,135,.22);box-shadow:inset 0 0 40px rgba(0,255,120,.04);animation:mediaAppear 1s ease both}
+.media-box img,.media-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transform:scale(1.04);animation:mediaIn 1s .15s ease forwards}
+.media-box::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.05),rgba(0,0,0,.12) 50%,rgba(0,0,0,.5))}
+.media-label{position:absolute;left:14px;bottom:13px;z-index:5;padding:7px 11px;border-radius:10px;color:#baffd0;background:rgba(2,12,7,.65);border:1px solid rgba(86,255,150,.2);backdrop-filter:blur(10px);font-size:11px}
+
+.input-group{margin-bottom:16px}.input-group:last-child{margin-bottom:0}.input-group label{display:block;margin-bottom:7px;color:#89a393;font-size:12px}
+.input-wrapper{position:relative}.input-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#52f793;font-size:15px;pointer-events:none}
+.input-wrapper input{width:100%;height:51px;padding:0 15px 0 42px;border-radius:14px;outline:none;border:1px solid rgba(75,255,140,.13);background:rgba(0,0,0,.23);color:#fff;font-size:14px;transition:border-color .3s,box-shadow .3s,background .3s}
+.input-wrapper input::placeholder{color:#52695c}
+.input-wrapper input:focus{background:rgba(0,0,0,.32);border-color:rgba(72,255,140,.55);box-shadow:0 0 0 3px rgba(50,255,130,.06),0 0 20px rgba(50,255,130,.06)}
+
+/* TOMBOL GENERATE DENGAN EFEK GELOMBANG & DENYUT */
+.generate-btn{position:relative;width:100%;height:55px;border:none;border-radius:16px;overflow:hidden;cursor:pointer;color:#001409;background:linear-gradient(135deg,#3cff89,#a0ffc1);font-size:14px;font-weight:bold;box-shadow:0 10px 30px rgba(40,255,125,.2);transition:transform .2s cubic-bezier(0.34, 1.56, 0.64, 1),box-shadow .2s ease;animation:pulseBtn 3s infinite ease-in-out}
+.generate-btn::before{content:"";position:absolute;top:0;left:-120%;width:70%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);transition:left .7s}
+.generate-btn:hover::before{left:140%}
+.generate-btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 15px 40px rgba(40,255,125,.35)}
+.generate-btn:active{transform:scale(0.94) translateY(2px);box-shadow:0 5px 15px rgba(40,255,125,.2)}
+
+/* EFEK KLIK GELOMBANG (RIPPLE) */
+.generate-btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(0);
+  animation: rippleAnim 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+@keyframes pulseBtn {
+  0%, 100% { box-shadow: 0 10px 25px rgba(40, 255, 125, 0.2); }
+  50% { box-shadow: 0 12px 35px rgba(40, 255, 125, 0.4); }
+}
+
+.result{display:none}.result.show{display:block;animation:resultIn .7s ease both}.result-title{margin-bottom:12px;color:#76ffa5;font-size:13px}
+#resultImage{width:100%;display:block;border-radius:17px;border:1px solid rgba(70,255,140,.2)}
+.download-btn{width:100%;height:48px;margin-top:13px;border-radius:13px;border:1px solid rgba(75,255,140,.23);background:rgba(50,255,130,.07);color:#7dffaa;font-size:13px;font-weight:bold;cursor:pointer;transition:.3s}
+.download-btn:hover{background:rgba(50,255,130,.13)}
+.loading{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(0,8,5,.72);backdrop-filter:blur(9px)}.loading.active{display:flex}
+.loader-box{text-align:center}.loader{width:45px;height:45px;margin:auto auto 13px;border-radius:50%;border:3px solid rgba(255,255,255,.08);border-top-color:#43ff91;animation:spin .8s linear infinite}.loader-box p{color:#91aa9b;font-size:12px}
+
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}@keyframes mediaAppear{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}@keyframes mediaIn{to{opacity:1;transform:scale(1)}}@keyframes resultIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){.container{width:92%;padding-top:25px}.header h1{font-size:26px}.card{padding:15px;border-radius:21px}.media-box{height:210px}}
+
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; margin-bottom: 10px; color: #ffffff; font-size: 16px; }
+.input-group input, .input-group textarea { width: 100%; padding: 16px 18px; border: 1px solid rgba(40, 255, 145, 0.35); border-radius: 18px; outline: none; background: rgba(0, 25, 15, 0.8); color: #ffffff; font-size: 16px; font-family: Arial, sans-serif; box-sizing: border-box; transition: 0.25s ease; }
+.input-group textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
+.input-group input::placeholder, .input-group textarea::placeholder { color: rgba(255, 255, 255, 0.45); }
+.input-group input:focus, .input-group textarea:focus { border-color: #28ff91; box-shadow: 0 0 0 3px rgba(40, 255, 145, 0.08); }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>vann Generator</h1><p>pilih api untuk generate</p></div>
+
+<div class="card">
+<div class="card-title"></div>
+<div class="media-box">
+  <img id="mainImage" src="foto.jpg" alt="Foto utama">
+  <video id="mainVideo" src="live3.mp4" autoplay muted loop playsinline></video>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Pilih API</div>
+<div class="input-group"><div class="input-wrapper"><select id="apiSelect" style="width:100%;height:51px;padding:0 15px;border-radius:14px;border:1px solid rgba(75,255,140,.25);background:rgba(0,0,0,.3);color:#fff;font-size:14px;outline:none"></select></div></div>
+<div id="fields"></div>
+</div>
+
+<button class="generate-btn" id="generateBtn">✨ Generate Api</button>
+
+<div class="card result" id="result">
+<div class="result-title">✓ Gambar berhasil dibuat</div>
+<img id="resultImage" alt="Hasil gambar" style="display:none">
+<pre id="resultText" style="display:none;white-space:pre-wrap;word-break:break-word;font-size:12px;color:#baffd0;max-height:320px;overflow:auto"></pre>
+<div id="resultLinks" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div>
+<button class="download-btn" id="downloadBtn">Download Gambar</button>
+</div>
+</div>
+
+<div class="loading" id="loading"><div class="loader-box"><div class="loader"></div><p>Sedang membuat gambar...</p></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const sel=$("apiSelect"),fields=$("fields"),btn=$("generateBtn"),result=$("result"),img=$("resultImage"),txt=$("resultText"),loading=$("loading"),dl=$("downloadBtn");
+const SEL_STYLE="width:100%;height:51px;padding:0 15px;border-radius:14px;border:1px solid rgba(75,255,140,.25);background:rgba(0,0,0,.3);color:#fff;font-size:14px;outline:none";
+const links=$("resultLinks");
+
+// EFEK SUARA SINTETIS SENSASI FUTURISTIK DENGAN WEB AUDIO API
+function playClickSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+    
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  } catch (e) {
+    console.log("Audio not supported or blocked");
+  }
+}
+
+// EFEK GELOMBANG (RIPPLE) TOMBOL
+function createRipple(e) {
+  const button = e.currentTarget;
+  const circle = document.createElement("span");
+  const diameter = Math.max(button.clientWidth, button.clientHeight);
+  const radius = diameter / 2;
+  const rect = button.getBoundingClientRect();
+  
+  circle.style.width = circle.style.height = `${diameter}px`;
+  circle.style.left = `${e.clientX - rect.left - radius}px`;
+  circle.style.top = `${e.clientY - rect.top - radius}px`;
+  circle.classList.add("ripple");
+  
+  const ripple = button.getElementsByClassName("ripple")[0];
+  if (ripple) ripple.remove();
+  
+  button.appendChild(circle);
+}
+
+function showLinks(o){links.innerHTML="";const s=typeof o==="string"?o:JSON.stringify(o||"");const seen=new Set();(s.match(/https?:\/\/[^\s"'\\<>]+/g)||[]).forEach(u=>{if(seen.size>=6||seen.has(u))return;seen.add(u);const a=document.createElement("a");a.href=u;a.target="_blank";a.rel="noopener";a.textContent="⬇ "+(u.length>48?u.slice(0,48)+"…":u);a.style.cssText="display:block;padding:12px;border-radius:12px;border:1px solid rgba(75,255,140,.25);color:#7dffaa;font-size:13px;word-break:break-all;text-decoration:none";links.appendChild(a)})}
+let APIS=[],current=null;
+
+async function init(){
+try{const r=await fetch("/api/list");APIS=(await r.json()).apis}catch(e){alert("Gagal memuat daftar API.");return}
+sel.innerHTML=APIS.map(a=>`<option value="${a.id}">${a.label}</option>`).join("");
+sel.onchange=render;render();
+}
+
+function fieldHTML(f){
+const L=`<label>${f.label}${f.optional?" (opsional)":""}</label>`,ph=f.placeholder||"",n=`data-name="${f.name}"`;
+if(f.type==="textarea")return `<div class="input-group">${L}<textarea ${n} rows="4" placeholder="${ph}"></textarea></div>`;
+if(f.type==="file")return `<div class="input-group">${L}<div class="input-wrapper"><input ${n} type="file" accept="image/*" style="padding:12px 15px;height:auto"></div></div>`;
+if(f.type==="select")return `<div class="input-group">${L}<select ${n} style="${SEL_STYLE}">${(f.options||[]).map(o=>`<option value="${o}">${o}</option>`).join("")}</select></div>`;
+return `<div class="input-group">${L}<div class="input-wrapper"><span class="input-icon">${f.icon||"✦"}</span><input ${n} type="${f.type||"text"}" placeholder="${ph}"></div></div>`;
+}
+
+function render(){
+current=APIS.find(a=>a.id===sel.value);
+if(!current)return;
+btn.textContent=current.button;
+fields.innerHTML=current.fields.map(fieldHTML).join("");
+result.classList.remove("show");
+}
+
+function readImage(file){return new Promise((ok,no)=>{const r=new FileReader();r.onerror=()=>no(new Error("Gagal membaca file."));r.onload=()=>{const im=new Image();im.onerror=()=>no(new Error("File bukan gambar."));im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.85))};im.src=r.result};r.readAsDataURL(file)})}
+function findImg(o){if(typeof o==="string")return /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?\S*)?$/i.test(o)?o:null;if(o&&typeof o==="object")for(const v of Object.values(o)){const r=findImg(v);if(r)return r}return null}
+
+btn.onclick=async(e)=>{
+// Mainkan Efek Suara & Efek Ripple Animasi
+playClickSound();
+createRipple(e);
+
+loading.classList.add("active");
+try{
+const inputs={};
+for(const f of current.fields){
+const el=fields.querySelector(`[data-name="${f.name}"]`);
+const v=f.type==="file"?(el.files[0]?await readImage(el.files[0]):""):el.value.trim();
+if(!v&&!f.optional)throw new Error(`${f.label} wajib diisi.`);
+inputs[f.name]=v;
+}
+const r=await fetch("/api/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({api:current.id,inputs})});
+const d=await r.json();
+if(!r.ok)throw new Error(d.error||"Gagal.");
+const pic=d.kind==="image"?d.image:findImg(d.data);
+if(pic){links.innerHTML="";img.src=pic;img.style.display="block";txt.style.display="none";dl.style.display="block";window.generatedImage=pic}
+else{showLinks(d.data);txt.textContent=typeof d.data==="string"?d.data:JSON.stringify(d.data,null,2);txt.style.display="block";img.style.display="none";dl.style.display="none"}
+result.classList.add("show");
+result.scrollIntoView({behavior:"smooth",block:"center"});
+}catch(e){alert(e.message||"Gagal.")}
+loading.classList.remove("active");
+};
+
+dl.onclick=()=>{if(!window.generatedImage)return;const a=document.createElement("a");a.href=window.generatedImage;a.target="_blank";a.download="hasil-gambar.png";a.click()};
+init();
+</script>
+<script src="musik.js"></script>
+<script src="api1.js"></script>
+  <script src="server.js"></script>
+</body>
+</html>
